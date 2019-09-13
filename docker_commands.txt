@@ -1,0 +1,5 @@
+dockerx build -f Dockerfile -t harshaarticlemicroservices .
+
+dockerx run -p 8080:6125 harshaarticlemicroservices
+
+dockerx images
