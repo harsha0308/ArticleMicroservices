@@ -21,7 +21,7 @@ public class ArticleDAO implements IArticleDAO {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Article> getAllArticles() {
-		String hql = "FROM Article as atcl ORDER BY atcl.articleId DESC";
+		String hql = "FROM Article as atcl where atcl.status!=1 ORDER BY atcl.articleId DESC";
 		return (List<Article>) entityManager.createQuery(hql).getResultList();
 	}	
 	@Override

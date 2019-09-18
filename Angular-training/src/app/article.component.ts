@@ -3,6 +3,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 import { ArticleService } from './article.service';
 import { Article } from './article';
+import { Router } from '@angular/router';
 
 @Component({
    selector: 'app-article',
@@ -20,11 +21,11 @@ export class ArticleComponent implements OnInit {
    articleForm = new FormGroup({
        title: new FormControl('', Validators.required),
        category: new FormControl('', Validators.required),
-       authorName: new FormControl('', Validators.required),
-       tags: new FormControl('', Validators.required)	   
+       authorName: new FormControl('', Validators.required) ,
+       tags: new FormControl('', Validators.required)  
    });
    //Create constructor to get service instance
-   constructor(private articleService: ArticleService) {
+   constructor(private router: Router,private articleService: ArticleService) {
    }
    //Create ngOnInit() and and load articles
    ngOnInit(): void {
@@ -37,18 +38,24 @@ export class ArticleComponent implements OnInit {
                 data => this.allArticles = data,
                 errorCode =>  this.statusCode = errorCode);   
    }
+
+
    //Handle create and update article
    onArticleFormSubmit() {
 	  this.processValidation = true;   
 	  if (this.articleForm.invalid) {
 	       return; //Validation failed, exit from method.
-	  }   
+     }   
+     
+
 	  //Form is valid, now perform create or update
       this.preProcessConfigurations();
 	  let title = this.articleForm.get('title').value.trim();
-      let category = this.articleForm.get('category').value.trim();
-      let authorName = this.articleForm.get('authorName').value.trim();
-      let tags = this.articleForm.get('tags').value.trim();	  
+      let category = this.articleForm.get('category').value.trim();	
+      let authorName= this.articleForm.get('authorName').value.trim();	
+      let tags = this.articleForm.get('tags').value.trim();	
+      
+      
 	  if (this.articleIdToUpdate === null) {  
 	    //Handle create article
 	    let article= new Article(null, title, category, authorName,tags);	  
@@ -61,7 +68,8 @@ export class ArticleComponent implements OnInit {
 		        errorCode => this.statusCode = errorCode);
 	  } else {  
    	    //Handle update article
-	    let article= new Article(this.articleIdToUpdate, title, category, authorName,tags);	  
+       let article= new Article(this.articleIdToUpdate, title, category, authorName,tags);	  
+      
 	    this.articleService.updateArticle(article)
 	      .subscribe(successCode => {
 		            this.statusCode = successCode;
@@ -71,18 +79,22 @@ export class ArticleComponent implements OnInit {
 		        errorCode => this.statusCode = errorCode);	  
 	  }
    }
+
+
    //Load article by id to edit
    loadArticleToEdit(articleId: string) {
       this.preProcessConfigurations();
       this.articleService.getArticleById(articleId)
 	      .subscribe(article => {
 		            this.articleIdToUpdate = article.articleId;   
-		            this.articleForm.setValue({ title: article.title, category: article.category,authorName: article.authorName, tags: article.tags });
+		            this.articleForm.setValue({ title: article.title, category: article.category,authorName: article.authorName,tags: article.tags });
 					this.processValidation = true;
 					this.requestProcessing = false;   
 		        },
 		        errorCode =>  this.statusCode = errorCode);   
    }
+
+
    //Delete article
    deleteArticle(articleId: string) {
       this.preProcessConfigurations();
@@ -94,11 +106,14 @@ export class ArticleComponent implements OnInit {
 			    },
 		        errorCode => this.statusCode = errorCode);    
    }
+
+
    //Perform preliminary processing configurations
    preProcessConfigurations() {
       this.statusCode = null;
 	  this.requestProcessing = true;   
    }
+
    //Go back from update to create
    backToCreateArticle() {
       this.articleIdToUpdate = null;

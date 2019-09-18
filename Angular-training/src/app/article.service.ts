@@ -6,17 +6,36 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/Rx';
 import { Article } from './article';
 import { catchError, map } from 'rxjs/operators';
+import { Router } from '@angular/router';
 @Injectable()
 export class ArticleService {
     //URLs for CRUD operations
     allArticlesUrl = "http://localhost:8082/user/all-articles";
 	articleUrl = "http://localhost:8082/user/article";
+	blockedUrl = "http://localhost:9087/user/blocked";
+	blockUrl = "http://localhost:9087/user/block";
+	unblockedUrl = "http://localhost:9087/user/unblocked";
+	unblockUrl = "http://localhost:9087/user/unblock";
 	//Create constructor to get Http instance
 	constructor(private http:Http) { 
 	}
 	//Fetch all articles
     getAllArticles(): Observable<Article[]> {
         return this.http.get(this.allArticlesUrl)
+		   		.map(this.extractData)
+		        .catch(this.handleError);
+
+	}
+	//Fetch blocked articles
+    getBlockedArticles(): Observable<Article[]> {
+        return this.http.get(this.blockedUrl)
+		   		.map(this.extractData)
+		        .catch(this.handleError);
+
+	}
+	//Fetch unblocked articles
+    getUnblockedArticles(): Observable<Article[]> {
+        return this.http.get(this.unblockedUrl)
 		   		.map(this.extractData)
 		        .catch(this.handleError);
 
@@ -54,6 +73,24 @@ export class ArticleService {
 		cpParams.set('id', articleId);			
 		let options = new RequestOptions({ headers: cpHeaders, params: cpParams });
 		return this.http.delete(this.articleUrl, options)
+			   .map(success => success.status)
+			   .catch(this.handleError);
+	}
+	blockArticleById(articleId: string): Observable<number> {
+		let cpHeaders = new Headers({ 'Content-Type': 'application/json' });
+		let cpParams = new URLSearchParams();
+		cpParams.set('id', articleId);			
+		let options = new RequestOptions({ headers: cpHeaders, params: cpParams });
+		return this.http.post(this.blockUrl, options)
+			   .map(success => success.status)
+			   .catch(this.handleError);
+	}	
+	unblockArticleById(articleId: string): Observable<number> {
+		let cpHeaders = new Headers({ 'Content-Type': 'application/json' });
+		let cpParams = new URLSearchParams();
+		cpParams.set('id', articleId);			
+		let options = new RequestOptions({ headers: cpHeaders, params: cpParams });
+		return this.http.post(this.unblockUrl, options)
 			   .map(success => success.status)
 			   .catch(this.handleError);
     }		
