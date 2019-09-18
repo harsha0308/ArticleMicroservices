@@ -1,54 +1,47 @@
 package com.pixogram.user;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.article.admin.entity.User;
-import com.article.admin.repo.UserRepo;
-
+import com.article.admin.entity.Article;
+import com.article.admin.repo.IUserRepo;
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(classes = com.article.admin.UserApplication.class)
 public class UserApplicationTests {
-	@Autowired
-	private static UserRepo controller;
-	
-	@Autowired
-	UserRepo repo;
-	 @Test		
-	    public void userRepo4(){	
-		 List<User> gfg = new ArrayList<User>();
-		 
-		
-	    
-	 }
-	 @Test		
-	    public void myRepo4(){	
-		 ArrayList<Optional> gfg = new ArrayList<Optional>();
-			
-	    
-	 }
-	 @Test		
-	    public void myRepo(){	
-	       		
-	    }
-	 @Test		
-	    public void myRepo1(){	
-		 
-		 		
-	    }
-	
-	
-	
-	
-	
+
+
+@Autowired
+IUserRepo repo;
+
+
+@Test
+   public void myRepo(){
+      List<Article> list = new ArrayList<>();
+      list = repo.getBlockedArticles();
+      assertEquals(list.get(0).getStatus(), 1);
+   }
+@Test
+   public void myRepo1(){
+List<Article> list = new ArrayList<>();
+    list = repo.getUnblockedArticles();
+    assertEquals(list.get(0).getStatus(), 0);
+   }
+
+@Test
+public void myRepo2(){
+List<Article> list = new ArrayList<>();
+ list = repo.getUnblockedArticles();
+ assertEquals(list.get(1).getTitle(), "The Tempest");
+}
+
+
+
+
 
 }
